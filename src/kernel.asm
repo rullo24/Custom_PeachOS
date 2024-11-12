@@ -20,3 +20,6 @@ _start:
 	out 0x92, al
 
 	jmp $
+
+; ensuring that kernel code is aligned w/ upcoming C code
+times 512-($ - $$) db 0 ; aligning w/ 512 bytes (16 bits divides into 512 perfectly)

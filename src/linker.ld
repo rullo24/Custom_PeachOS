@@ -3,24 +3,29 @@ OUTPUT_FORMAT(binary)
 SECTIONS 
 {
     . = 1M; /* kernel loaded into 1M of memory --> kernel to be loaded after this mb */
-    .text :
+    .text : ALIGN(4096) /* ensure everything in this section is aligned */
     {
         *(.text)
     }
 
-    .rodata :
+    .rodata : ALIGN(4096)
     {
         *(.rodata)
     }
 
-    .data :
+    .data : ALIGN(4096)
     {
         *(.data)
     }
 
-    .bss :
+    .bss : ALIGN(4096)
     {
         *(COMMON)
         *(.bss)
+    }
+
+    .asm : ALIGN(4096) /* not aligned w/ C code but won't interfere w/ it as it run last */
+    {
+        *(.asm)
     }
 }
