@@ -20,4 +20,8 @@ all: ./bin/boot.bin ./bin/kernel.bin
 
 # cleaning all necessary binaries 
 clean:
-	rm -rf ./boot.bin
+	rm -rf ./bin/boot.bin
+	rm -rf ./bin/kernel.bin
+	rm -rf ./bin/os.bin
+	rm -rf ${FILES} 
+	rm -rf ./build/kernelfull.o
