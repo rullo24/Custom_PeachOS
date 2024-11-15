@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "idt/idt.h"
 #include "io/io.h"
+#include "memory/heap/kheap.h"
 
 // global vars
 uint16_t *video_mem = 0x0; // to output chars to screen, simply put them at 0xb8000 and 0xb8001 for colour
@@ -70,6 +71,9 @@ void print(const char *str) {
 void kernel_main() {
     terminal_init();
     print("Hello World!\ntest");
+
+    // init the heap
+    kheap_init();
 
     // init the interrupt descriptor table
     idt_init();
