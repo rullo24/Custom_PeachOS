@@ -4,6 +4,7 @@
 
 // user includes
 #include "kernel.h"
+#include "idt/idt.h"
 
 // global vars
 uint16_t *video_mem = 0x0; // to output chars to screen, simply put them at 0xb8000 and 0xb8001 for colour
@@ -70,5 +71,8 @@ void print(const char *str) {
 // main runtime that all functions work in
 void kernel_main() {
     terminal_init();
-    print("Hello World!");
+    print("Hello World!\ntest");
+
+    // init the interrupt descriptor table
+    idt_init();
 }
