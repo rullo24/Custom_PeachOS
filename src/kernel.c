@@ -1,10 +1,8 @@
-// std C includes
+#include "kernel.h"
 #include <stddef.h>
 #include <stdint.h>
-
-// user includes
-#include "kernel.h"
 #include "idt/idt.h"
+#include "io/io.h"
 
 // global vars
 uint16_t *video_mem = 0x0; // to output chars to screen, simply put them at 0xb8000 and 0xb8001 for colour
@@ -75,4 +73,6 @@ void kernel_main() {
 
     // init the interrupt descriptor table
     idt_init();
+
+    outb(0x60, 0xff);
 }
