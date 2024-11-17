@@ -4,6 +4,7 @@
 #include "idt/idt.h"
 #include "io/io.h"
 #include "memory/heap/kheap.h"
+#include "memory/paging/paging.h"
 
 // global vars
 uint16_t *video_mem = 0x0; // to output chars to screen, simply put them at 0xb8000 and 0xb8001 for colour
@@ -67,6 +68,8 @@ void print(const char *str) {
     }
 }
 
+static struct paging_4gb_chunk *kernel_chunk = 0; // static means that the global is only accessible from kernel.c
+
 // main runtime that all functions work in
 void kernel_main() {
     terminal_init();
@@ -77,6 +80,15 @@ void kernel_main() {
 
     // init the interrupt descriptor table
     idt_init();
+
+    // setup paging
+    kernel_chunk = paging_new_4gb(PAGING_IS_WRITABLE | PAGING_IS_PRESENT | PAGING_ACCESS_FROM_ALL);
+
+    // switch to kernel paging chunk
+    paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
+
+    // enable paging
+    enable_paging();
 
     // enable the system interrupts
     enable_interrupts();
