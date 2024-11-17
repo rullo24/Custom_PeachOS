@@ -5,6 +5,7 @@
 #include "io/io.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
+#include "disk/disk.h"
 
 // global vars
 uint16_t *video_mem = 0x0; // to output chars to screen, simply put them at 0xb8000 and 0xb8001 for colour
@@ -87,11 +88,11 @@ void kernel_main() {
     // switch to kernel paging chunk
     paging_switch(paging_4gb_chunk_get_directory(kernel_chunk));
 
-    char *ptr = kzalloc(4096);
-    paging_set(paging_4gb_chunk_get_directory(kernel_chunk), (void*)0x1000, (uint32_t)ptr | PAGING_ACCESS_FROM_ALL | PAGING_IS_PRESENT | PAGING_IS_WRITABLE);
-
     // enable paging
     enable_paging();
+
+    char buf[512];
+    disk_read_sector(0, 1, buf);
 
     // enable the system interrupts
     enable_interrupts();
