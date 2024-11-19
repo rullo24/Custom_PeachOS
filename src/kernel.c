@@ -5,7 +5,9 @@
 #include "io/io.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
+#include "string/string.h"
 #include "disk/disk.h"
+#include "fs/pparser.h"
 
 // global vars
 uint16_t *video_mem = 0x0; // to output chars to screen, simply put them at 0xb8000 and 0xb8001 for colour
@@ -53,15 +55,6 @@ void terminal_init() {
 
 }
 
-size_t strlen(const char *str) {
-    size_t len = 0;
-    while (str[len]) {
-        len++;
-    }
-
-    return len;
-}
-
 void print(const char *str) {
     size_t len = strlen(str);
     for (int i=0; i<len; i++) {
@@ -96,4 +89,9 @@ void kernel_main() {
 
     // enable the system interrupts
     enable_interrupts();
+
+    struct path_root *root_path = pathparser_parse("0:/bin/shell.exe", NULL);
+    if (root_path) {
+
+    }
 }
