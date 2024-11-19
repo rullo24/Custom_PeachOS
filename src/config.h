@@ -10,4 +10,6 @@
 #define PEACHOS_HEAP_ADDRESS 0x01000000
 #define PEACHOS_HEAP_TABLE_ADDRESS 0x00007e00 // 450KB of memory after this
 
+#define PEACHOS_SECTOR_SIZE 512
+
 #endif
