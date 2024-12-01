@@ -7,6 +7,7 @@
 #include "fat/fat16.h"
 #include "status.h"
 #include "kernel.h"
+#include <stdint.h>
 
 struct filesystem *filesystems[PEACHOS_MAX_FILESYSTEMS];
 struct file_descriptor *file_descriptors[PEACHOS_MAX_FILE_DESCRIPTORS];
@@ -155,5 +156,24 @@ out:
     if (res < 0) {
         res = 0;
     }
+    return res;
+}
+
+int fread(void *ptr, uint32_t size, uint32_t nmemb, int fd) {
+    int res = 0;
+    if (size == 0x0 || nmemb == 0x0 || fd < 1) {
+        res = -EINVARG;
+        goto out;
+    }   
+
+    struct file_descriptor *desc = file_get_descriptor(fd);
+    if (!desc) {
+        res = -EINVARG;
+        goto out;
+    }
+    // call lower filesystem --> parse private desc data
+    res = desc->filesystem->read(desc->disk, desc->private, size, nmemb, (char*)ptr);
+
+out:
     return res;
 }
