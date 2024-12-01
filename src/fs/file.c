@@ -48,6 +48,11 @@ void fs_init() {
     fs_load();
 }
 
+static void file_free_descriptor(struct file_descriptor *desc) {
+    file_descriptors[desc->index-1] = 0x0;
+    kfree(desc);
+}
+
 static int file_new_descriptor(struct file_descriptor **desc_out) {
     int res = -ENOMEM;
     for (int i=0; i < PEACHOS_MAX_FILE_DESCRIPTORS; i++) {
@@ -179,7 +184,9 @@ int fclose(int fd) {
         goto out;
     }
     res = desc->filesystem->close(desc->private);
-
+    if (res == PEACHOS_ALL_OK) {
+        file_free_descriptor(desc);
+    }
 out:
     return res;
 }
@@ -191,7 +198,6 @@ int fseek(int fd, int offset, FILE_SEEK_MODE whence) {
         return -EIO;
         goto out;
     }
-
     res = desc->filesystem->seek(desc->private, offset, whence);
 
 out:

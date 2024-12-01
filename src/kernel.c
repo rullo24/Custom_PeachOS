@@ -99,6 +99,9 @@ void kernel_main() {
     if (fd) {
         struct file_stat s;
         fstat(fd, &s);
+        fclose(fd);
+
+        print("\ntesting\n");
     }
 
     while (1) {}
