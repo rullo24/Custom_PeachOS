@@ -5,11 +5,14 @@
 #include "io/io.h"
 #include "memory/heap/kheap.h"
 #include "memory/paging/paging.h"
+#include "memory/memory.h"
 #include "string/string.h"
 #include "fs/file.h"
 #include "disk/disk.h"
 #include "fs/pparser.h"
 #include "disk/streamer.h"
+#include "gdt/gdt.h"
+#include "config.h"
 
 // global vars
 uint16_t *video_mem = 0x0; // to output chars to screen, simply put them at 0xb8000 and 0xb8001 for colour
@@ -71,10 +74,23 @@ void panic(const char *msg) {
     while (1) {}
 }
 
+struct gdt gdt_real[PEACHOS_TOTAL_GDT_SEGMENTS];
+struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
+    {.base = 0x00, .limit = 0x00, .type = 0x00}, // NULL segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x9a}, // kernel code segment
+    {.base = 0x00, .limit = 0xffffffff, .type = 0x92} // kernel data segment
+};
+
 // main runtime that all functions work in
 void kernel_main() {
     terminal_init();
     print("Hello World!\ntest");
+
+    memset(gdt_real, 0x00, sizeof(gdt_real));
+    gdt_structured_to_gdt(gdt_real, gdt_structured, PEACHOS_TOTAL_GDT_SEGMENTS);
+    
+    // load the GDT
+    gdt_load(gdt_real, sizeof(gdt_real));
 
     // init the heap
     kheap_init();

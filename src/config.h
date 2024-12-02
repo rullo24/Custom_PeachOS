@@ -17,4 +17,6 @@
 
 #define PEACHOS_MAX_PATH 108
 
+#define PEACHOS_TOTAL_GDT_SEGMENTS 3
+
 #endif
