@@ -66,6 +66,11 @@ void print(const char *str) {
 
 static struct paging_4gb_chunk *kernel_chunk = 0; // static means that the global is only accessible from kernel.c
 
+void panic(const char *msg) {
+    print(msg);
+    while (1) {}
+}
+
 // main runtime that all functions work in
 void kernel_main() {
     terminal_init();
