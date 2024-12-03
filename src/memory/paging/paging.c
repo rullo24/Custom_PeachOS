@@ -63,6 +63,38 @@ out:
     return res;
 }
 
+void *paging_align_address(void *ptr) {
+    // checks if not already aligned
+    if ((uint32_t)ptr % PAGING_PAGE_SIZE) { 
+        return (void*)((uint32_t)ptr + PAGING_PAGE_SIZE - ((uint32_t)ptr % PAGING_PAGE_SIZE));
+    }
+
+    return ptr;
+}
+
+int paging_map(uint32_t *directory, void *virt, void *phys, int flags) {
+    // checking if virt and phys address are aligned
+    if (((unsigned int)virt % PAGING_PAGE_SIZE) || ((unsigned int)phys % PAGING_PAGE_SIZE)) {
+        return -EINVARG;
+    }
+
+    return paging_set(directory, virt, (uint32_t)phys | flags);
+}
+
+int paging_map_range(uint32_t *directory, void *virt, void *phys, int count, int flags) {
+    int res = 0;
+    for (int i=0; i<count; i++) {
+        res = paging_map(directory, virt, phys, flags);
+        if (res == 0) {
+            break;
+        }
+        virt += PAGING_PAGE_SIZE;
+        phys += PAGING_PAGE_SIZE;
+    }
+
+    return res;
+}
+
 int paging_map_to(uint32_t *directory, void *virt, void *phys, void *phys_end, int flags) {
     int res = 0;
     if ((uint32_t)virt % PAGING_PAGE_SIZE != 0) {
