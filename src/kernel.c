@@ -7,6 +7,8 @@
 #include "memory/paging/paging.h"
 #include "memory/memory.h"
 #include "string/string.h"
+#include "task/task.h"
+#include "task/process.h"
 #include "fs/file.h"
 #include "disk/disk.h"
 #include "fs/pparser.h"
@@ -14,6 +16,7 @@
 #include "task/tss.h"
 #include "gdt/gdt.h"
 #include "config.h"
+#include "status.h"
 
 // global vars
 uint16_t *video_mem = 0x0; // to output chars to screen, simply put them at 0xb8000 and 0xb8001 for colour
@@ -126,17 +129,13 @@ void kernel_main() {
     // enable paging
     enable_paging();
 
-    // enable the system interrupts
-    enable_interrupts();
-
-    int fd = fopen("0:/hello.txt", "r");
-    if (fd) {
-        struct file_stat s;
-        fstat(fd, &s);
-        fclose(fd);
-
-        print("\ntesting\n");
+    struct process *process = 0x0;
+    int res = process_load("0:/blank.bin", &process);
+    if (res != PEACHOS_ALL_OK) {
+        panic("failed to load blank.bin");
     }
+
+    task_run_first_ever_task();
 
     while (1) {}
 }
