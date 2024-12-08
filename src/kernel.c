@@ -78,6 +78,12 @@ void panic(const char *msg) {
     while (1) {}
 }
 
+// switch page dir to kernel page --> change regs to kernel regs
+void kernel_page() {
+    kernel_registers();
+    paging_switch(kernel_chunk);
+}
+
 struct tss tss;
 struct gdt gdt_real[PEACHOS_TOTAL_GDT_SEGMENTS];
 struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {

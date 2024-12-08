@@ -47,3 +47,16 @@ void idt_init() {
     // load the interrupt descriptor table
     idt_load(&idtr_descriptor);
 }
+
+void isr80h_handle_command(int command, struct interrupt_frame *frame) {
+    
+}
+
+void *isr80h_handler(int command, struct interrupt_frame *frame) {
+    void *res = 0;
+    kernel_page();
+    task_current_save_state(frame); // save registers from frame into task --> multitasking purposes
+    res = isr80h_handle_command(command, frame);
+    task_page();
+    return res;
+}

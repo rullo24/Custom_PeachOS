@@ -1,6 +1,8 @@
 [BITS 32]
 
 global _start
+global kernel_registers
+
 extern kernel_main
 
 CODE_SEG equ 0x08
@@ -32,6 +34,14 @@ _start:
 
 	call kernel_main
 	jmp $
+
+kernel_registers:
+	mov ax, 10
+	mov ds, ax
+	mov es, ax
+	mov gs, ax
+	mov fs, ax
+	ret
 
 ; ensuring that kernel code is aligned w/ upcoming C code
 times 512-($ - $$) db 0 ; aligning w/ 512 bytes (16 bits divides into 512 perfectly)
