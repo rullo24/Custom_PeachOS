@@ -8,6 +8,11 @@ SECTIONS
         *(.text)
     }
 
+    .asm : ALIGN(4096) /* not aligned w/ C code but won't interfere w/ it as it run last */
+    {
+        *(.asm)
+    }
+
     .rodata : ALIGN(4096)
     {
         *(.rodata)
@@ -24,8 +29,4 @@ SECTIONS
         *(.bss)
     }
 
-    .asm : ALIGN(4096) /* not aligned w/ C code but won't interfere w/ it as it run last */
-    {
-        *(.asm)
-    }
 }
