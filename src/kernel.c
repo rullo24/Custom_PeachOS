@@ -100,7 +100,6 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
 // main runtime that all functions work in
 void kernel_main() {
     terminal_init();
-    print("Hello World!\ntest");
 
     memset(gdt_real, 0x00, sizeof(gdt_real));
     gdt_structured_to_gdt(gdt_real, gdt_structured, PEACHOS_TOTAL_GDT_SEGMENTS);
@@ -149,7 +148,6 @@ void kernel_main() {
         panic("failed to load blank.bin");
     }
 
-    keyboard_push('A');
     task_run_first_ever_task();
 
     while (1) {}

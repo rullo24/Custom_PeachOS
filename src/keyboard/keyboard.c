@@ -46,6 +46,10 @@ void keyboard_push(char c) {
     struct process *process = process_current();
     if (!process) {
         return;
+    } 
+
+    if (c == '\0') {
+        return;
     }
 
     int real_index = keyboard_get_tail_index(process);
