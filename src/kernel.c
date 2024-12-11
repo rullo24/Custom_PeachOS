@@ -97,10 +97,6 @@ struct gdt_structured gdt_structured[PEACHOS_TOTAL_GDT_SEGMENTS] = {
     {.base = (uint32_t)&tss, .limit = sizeof(tss), .type = 0xe9} // TSS segment
 };
 
-void pic_timer_callback(struct interrupt_frame *frame) {
-    print("Timer activated\n");
-}
-
 // main runtime that all functions work in
 void kernel_main() {
     terminal_init();
@@ -146,8 +142,6 @@ void kernel_main() {
 
     // init all the system keyboards
     keyboard_init();
-
-    idt_register_interrupt_callback(0x20, pic_timer_callback); // timer interrupt
 
     struct process *process = 0x0;
     int res = process_load_switch("0:/blank.bin", &process);
