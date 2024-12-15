@@ -9,7 +9,7 @@
 #include "kernel.h"
 #include "config.h"
 
-const char *elf_signature[] = {0x7f, 'E', 'L', 'F'}; // 0x7f is a fixed value to ensure signature starts with a fixed, non-printable, unique-byte
+const char elf_signature[] = {0x7f, 'E', 'L', 'F'}; // 0x7f is a fixed value to ensure signature starts with a fixed, non-printable, unique-byte
 static bool elf_valid_signature(void *buffer) {
     return memcmp(buffer, (void*)elf_signature, sizeof(elf_signature)) == 0;
 }
@@ -58,6 +58,10 @@ struct elf32_shdr *elf_section(struct elf_header *header, int index) {
     return &elf_sheader(header)[index];
 }
 
+void *elf_phdr_phys_address(struct elf_file *file, struct elf32_phdr *phdr) {
+    return elf_memory(file) + phdr->p_offset;
+}
+
 char *elf_str_table(struct elf_header *header) {
     return (char*)header+elf_section(header, header->e_shstrndx)->sh_offset;
 }
@@ -79,7 +83,7 @@ void *elf_phys_end(struct elf_file *file) {
 }
 
 int elf_validate_loaded(struct elf_header *header) {
-    return (elf_valid_signature(header) && elf_valid_class(header) && elf_valid_encoding(header) && elf_has_program_header(header)) ? PEACHOS_ALL_OK : -EINVARG;
+    return (elf_valid_signature(header) && elf_valid_class(header) && elf_valid_encoding(header) && elf_has_program_header(header)) ? PEACHOS_ALL_OK : -EINFORMAT;
 }
 
 int elf_process_phdr_pt_load(struct elf_file *elf_file, struct elf32_phdr *phdr) {
@@ -104,9 +108,10 @@ int elf_process_pheader(struct elf_file *elf_file, struct elf32_phdr *phdr) {
             res = elf_process_phdr_pt_load(elf_file, phdr);
         break;
     }
+    return res;
 }
 
-int elf_process_pheader(struct elf_file *elf_file) {
+int elf_process_pheaders(struct elf_file *elf_file) {
     int res = 0x0;
     struct elf_header *header = elf_header(elf_file);
     for (int i=0; i < header->e_phnum; i++) {
@@ -124,7 +129,7 @@ out:
 int elf_process_loaded(struct elf_file *elf_file) {
     int res = 0;
     struct elf_header *header = elf_header(elf_file);
-    int res = elf_validate_loaded(header);
+    res = elf_validate_loaded(header);
     if (res < 0) {
         goto out;
     }
