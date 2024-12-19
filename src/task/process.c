@@ -60,6 +60,33 @@ void *process_malloc(struct process *process, size_t size) {
     return ptr;
 }
 
+static bool process_is_process_pointer(struct process *process, void *ptr) {
+    for (int i=0; i<PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i] == ptr) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static void process_allocation_unjoin(struct process *process, void *ptr) {
+    for (int i=0; i < PEACHOS_MAX_PROGRAM_ALLOCATIONS; i++) {
+        if (process->allocations[i] == ptr) {
+            process->allocations[i] = 0x0; // remove process in allocations
+        }
+    }
+}
+
+void process_free(struct process *process, void *ptr) {
+    if (!process_is_process_pointer(process, ptr)) { // not allowing access to other process' memory
+        return;
+    }
+
+    // remove the alloc from the array
+    process_allocation_unjoin(process, ptr);
+    kfree(ptr);
+}
+
 static int process_load_binary(const char *filename, struct process *process) {
     int res = 0;
     int fd = fopen(filename, "r");

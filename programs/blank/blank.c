@@ -8,6 +8,7 @@ int main (int argc, char *argv[]) {
     if (!ptr) {
         return -1;
     }
+    free(ptr);
 
     while(1) {
         if (getkey() != '\0') {
