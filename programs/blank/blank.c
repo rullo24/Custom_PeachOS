@@ -1,12 +1,18 @@
 #include "peachos.h"
+#include "stdlib.h"
 
 int main (int argc, char *argv[]) {
     print("Hello, how are you?\n");
 
+    void *ptr = malloc(512);
+    if (!ptr) {
+        return -1;
+    }
+
     while(1) {
-        if (getkey() != 0x0) {
+        if (getkey() != '\0') {
             print("key was pressed");
         }
     }
-    return 0x0;
+    return 0;
 }
